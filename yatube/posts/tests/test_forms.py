@@ -13,6 +13,7 @@ User = get_user_model()
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
+
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostFormTests(TestCase):
     @classmethod
@@ -105,6 +106,7 @@ class PostFormTests(TestCase):
             response,
             f'{reverse("users:login")}?next={reverse("posts:post_create")}'
         )
+
     def test_guest_client_comment(self):
         response = self.guest_client.post(
             reverse('posts:add_comment',

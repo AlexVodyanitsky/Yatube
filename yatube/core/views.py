@@ -10,6 +10,7 @@ def csrf_failure(request, reason=''):
     """Return 403 page"""
     return render(request, 'core/403csrf.html')
 
+
 def internal_server_error(request):
     """Return 500 page"""
     return render(request, 'core/500.html')
