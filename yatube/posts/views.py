@@ -126,7 +126,7 @@ def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     user = request.user
     if user != author:
-        Follow.objects.get_or_create(
+        Follow.objects.create(
             user=user,
             author=author
         )
@@ -138,9 +138,12 @@ def profile_unfollow(request, username):
     """Unfollowing"""
     author = get_object_or_404(User, username=username)
     user = request.user
-    if user != author:
-        Follow.objects.filter(
-            user=request.user,
+    if Follow.objects.get(
+        user=user,
+        author=author
+    ):
+        Follow.objects.get(
+            user=user,
             author=author
         ).delete()
     return redirect('posts:profile', username=username)

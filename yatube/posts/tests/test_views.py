@@ -4,6 +4,7 @@ import tempfile
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, override_settings, TestCase
 from django.urls import reverse
@@ -66,8 +67,10 @@ class PostViewsTests(TestCase):
         self.second_authorized_client.force_login(self.second_user)
         self.authorized_client_author = Client()
         self.authorized_client_author.force_login(self.author)
+        cache.clear()
 
     def test_pages_use_correct_template(self):
+        """The page templates used are as expected."""
         templates_pages_names = {
             'posts/index.html': reverse('posts:index'),
             'posts/group_list.html': reverse(
@@ -95,6 +98,7 @@ class PostViewsTests(TestCase):
         self.assertTemplateUsed(response, 'posts/post_detail.html')
 
     def page_show_correct_context(self, url, param=None):
+        """Basic context checking for all pages."""
         response = self.authorized_client_author.get(reverse(
             url, kwargs=param))
         if url in ('posts:post_create', 'posts:edit'):
@@ -120,34 +124,44 @@ class PostViewsTests(TestCase):
             self.assertEqual(post.image, self.post.image)
 
     def test_index_show_correct_context(self):
+        """Index page uses context as expected."""
         self.page_show_correct_context('posts:index')
 
     def test_group_list_show_correct_context(self):
+        """Group list page uses context as expected."""
         self.page_show_correct_context('posts:group_list',
                                        param={'slug': 'test-slug'})
 
     def test_profile_show_correct_context(self):
+        """Profile page uses context as expected."""
         self.page_show_correct_context('posts:profile',
                                        param={'username': f'{self.author}'})
 
     def test_post_detail_show_correct_context(self):
+        """Post page uses context as expected."""
         self.page_show_correct_context('posts:post_detail',
                                        param={'post_id': f'{self.post.id}'})
 
     def test_post_create_show_correct_context(self):
+        """Create page uses context as expected."""
         self.page_show_correct_context('posts:post_create')
 
     def test_post_edit_show_correct_context(self):
+        """Edit page uses context as expected."""
         self.page_show_correct_context('posts:edit',
                                        param={'post_id': f'{self.post.id}'})
 
     def test_index_cash(self):
+        """Context index is cashed."""
         first_response = self.authorized_client.get(reverse('posts:index'))
         Post.objects.get(pk=self.post.pk).delete()
         second_response = self.authorized_client.get(reverse('posts:index'))
         self.assertEqual(first_response.content, second_response.content)
+        cache.clear()
+        self.assertEqual(Post.objects.count(), 0)
 
     def test_authorized_client_follows(self):
+        """Follow func check."""
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': f'{self.author}'}
@@ -157,6 +171,7 @@ class PostViewsTests(TestCase):
         self.assertEqual(follow.author.username, 'author')
 
     def test_authorized_client_unfollows(self):
+        """Unfollow func check."""
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': f'{self.author}'}
@@ -170,6 +185,7 @@ class PostViewsTests(TestCase):
             author_id=2).exists())
 
     def test_followers_see_new_post(self):
+        """Follower can see post on the follow index page."""
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': f'{self.author}'}
@@ -220,6 +236,7 @@ class PaginatorViewsTest(TestCase):
         self.guest_client = Client()
 
     def test_pages_contains_count_of_records(self):
+        """Paginator works correctly."""
         reverse_names = [
             reverse('posts:index'),
             reverse('posts:group_list', kwargs={'slug': 'test-slug'}),

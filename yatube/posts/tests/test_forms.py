@@ -43,6 +43,7 @@ class PostFormTests(TestCase):
         self.authorized_client_author.force_login(self.author)
 
     def test_create_post_form(self):
+        """After creation, post is stored in database."""
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -76,6 +77,7 @@ class PostFormTests(TestCase):
         self.assertEqual(post.image, 'posts/small.gif')
 
     def test_edit_post_form(self):
+        """Editing works correctly."""
         second_group = Group.objects.create(
             title='Другое название',
             slug='other-test-slug',
@@ -99,6 +101,7 @@ class PostFormTests(TestCase):
         self.assertEqual(edited_post.group, second_group)
 
     def test_guest_client_post_request(self):
+        """Guest client can't post request."""
         response = self.guest_client.post(
             reverse('posts:post_create')
         )
@@ -108,6 +111,7 @@ class PostFormTests(TestCase):
         )
 
     def test_guest_client_comment(self):
+        """Guest client can't comment."""
         response = self.guest_client.post(
             reverse('posts:add_comment',
                     kwargs={'post_id': self.post.id})
@@ -117,3 +121,18 @@ class PostFormTests(TestCase):
             f'{reverse("users:login")}?next='
             f'{reverse("posts:add_comment", kwargs={"post_id": self.post.id})}'
         )
+
+    def test_comment_on_the_page(self):
+        """The created comment is displayed on the post page."""
+        form_data = {
+            'text': 'Комментарий',
+        }
+        self.authorized_client_author.post(reverse(
+            'posts:add_comment', kwargs={'post_id': self.post.id}),
+            data=form_data,
+            reverse=True
+        )
+        response = self.authorized_client_author.get(reverse(
+            'posts:post_detail', kwargs={'post_id': f'{self.post.id}'}))
+        comment = response.context['comments'][0]
+        self.assertEqual(comment.text, 'Комментарий')

@@ -31,7 +31,11 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link link-light" href="">Изменить пароль</a>
+          <a class="nav-link link-light {% if view_name == 'users:password_change' %}active{% endif %}"
+            href="{% url 'users:password_change' %}"
+            >
+              Изменить пароль
+          </a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if view_name  == 'users:logout' %}active{% endif %}"

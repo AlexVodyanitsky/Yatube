@@ -23,6 +23,7 @@ class PostModelTest(TestCase):
         )
 
     def test_verbose_name(self):
+        """Verbose names are as expected."""
         field_verboses = {
             'text': 'Текст поста',
             'group': 'Группа'
@@ -35,6 +36,7 @@ class PostModelTest(TestCase):
                 )
 
     def test_help_text(self):
+        """Help texts are as expected."""
         field_help_texts = {
             'text': 'Текст нового поста',
             'group': 'Группа, к которой будет относиться пост'
@@ -46,7 +48,9 @@ class PostModelTest(TestCase):
                 )
 
     def test_post_str_method_works(self):
+        """Post str method works correctly."""
         self.assertEqual(self.post.text[:15], str(self.post))
 
     def test_group_str_method_works(self):
+        """Group str method works correctly."""
         self.assertEqual(self.group.title, str(self.group))
