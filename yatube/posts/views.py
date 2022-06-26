@@ -39,6 +39,7 @@ def profile(request, username):
         'author': author,
         'page_obj': page_obj,
         'following': following,
+        'user': user,
     }
     return render(request, 'posts/profile.html', context)
 
@@ -47,7 +48,7 @@ def post_detail(request, post_id):
     """Return the post page."""
     post = get_object_or_404(Post, pk=post_id)
     form = CommentForm(request.POST or None)
-    comments = Comment.objects.select_related('post')
+    comments = Comment.objects.filter(post_id=post_id)
     context = {
         'post': post,
         'form': form,

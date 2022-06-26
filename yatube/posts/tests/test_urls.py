@@ -39,14 +39,14 @@ class PostURLTests(TestCase):
         self.authorized_client_author = Client()
         self.authorized_client_author.force_login(self.author)
 
-    def test_urls_for_guest_exists(self):
+    def test_urls_for_guest_exist(self):
         """Guest client has access to his pages."""
         for url in list(self.templates_url_names)[:-2]:
             with self.subTest():
                 response = self.guest_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_urls_for_authorized_exists(self):
+    def test_url_for_authorized_exists(self):
         """Authorized client has access to his pages."""
         testing_url = list(self.templates_url_names)[-2]
         response = self.authorized_client.get(testing_url)
@@ -58,7 +58,7 @@ class PostURLTests(TestCase):
         response = self.authorized_client_author.get(testing_url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_urls_uses_correct_template(self):
+    def test_urls_use_correct_templates(self):
         """The urls use correct templates."""
         for address, template in self.templates_url_names.items():
             with self.subTest(template=template):
