@@ -69,10 +69,16 @@
                 </div>
             </div>
         {% endfor %}
-      <a class="btn btn-default" href="{% url 'posts:edit' post.pk %}">
-        <span class="glyphicon glyphicon-pencil"></span>
-        Редактировать
-      </a>
+      {% if user == author %}
+        <a class="btn btn-default" href="{% url 'posts:edit' post.pk %}">
+          <span class="glyphicon glyphicon-pencil"></span>
+          Редактировать пост
+        </a>
+        <a class="btn btn-default" href="{% url 'posts:post_delete' post.pk %}">
+          <span class="glyphicon glyphicon-pencil"></span>
+          Удалить пост
+        </a>
+      {% endif %}
     </article>
   </div>
 {% endblock %}

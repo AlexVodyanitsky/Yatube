@@ -211,6 +211,11 @@ class PostViewsTests(TestCase):
         second_page_obj = second_response.context['page_obj']
         self.assertEqual(len(second_page_obj), 0)
 
+    def test_post_delete(self):
+        """Post author is able to delete his post."""
+        self.authorized_client_author.get(reverse(
+            'posts:post_delete', kwargs={'post_id': f'{self.post.id}'}))
+        self.assertFalse(Post.objects.filter(pk=self.post.pk).exists())
 
 class PaginatorViewsTest(TestCase):
     @classmethod

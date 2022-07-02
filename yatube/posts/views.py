@@ -34,7 +34,8 @@ def profile(request, username):
     post_list = author.posts.select_related('author')
     page_obj = paginator(request, post_list)
     user = request.user
-    following = user.is_authenticated and author.following.exists()
+    following = (user.is_authenticated and
+                 Follow.objects.filter(user=user, author=author))
     context = {
         'author': author,
         'page_obj': page_obj,
@@ -47,15 +48,25 @@ def profile(request, username):
 def post_detail(request, post_id):
     """Return the post page."""
     post = get_object_or_404(Post, pk=post_id)
+    user = request.user
+    author = post.author
     form = CommentForm(request.POST or None)
     comments = Comment.objects.filter(post_id=post_id)
     context = {
         'post': post,
+        'user': user,
+        'author': author,
         'form': form,
         'comments': comments
     }
     return render(request, 'posts/post_detail.html', context)
 
+
+@login_required
+def post_delete(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    post.delete()
+    return redirect('posts:profile', post.author)
 
 @login_required
 def post_create(request):
@@ -79,7 +90,8 @@ def post_create(request):
 def post_edit(request, post_id):
     """Return the post edit page."""
     post = get_object_or_404(Post, pk=post_id)
-    if request.user != post.author:
+    user = request.user
+    if user != post.author:
         return redirect('posts:post_detail', post_id=post_id)
     form = PostForm(
         request.POST or None,
@@ -139,12 +151,12 @@ def profile_unfollow(request, username):
     """Unfollowing"""
     author = get_object_or_404(User, username=username)
     user = request.user
-    if Follow.objects.get(
-        user=user,
-        author=author
-    ):
-        Follow.objects.get(
-            user=user,
-            author=author
-        ).delete()
+    try:
+        follow = Follow.objects.get(
+            author=author,
+            user=user
+        )
+    except Follow.DoesNotExist:
+        follow = None
+    follow.delete()
     return redirect('posts:profile', username=username)
