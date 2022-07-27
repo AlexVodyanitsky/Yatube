@@ -63,12 +63,6 @@ def post_detail(request, post_id):
 
 
 @login_required
-def post_delete(request, post_id):
-    post = get_object_or_404(Post, pk=post_id)
-    post.delete()
-    return redirect('posts:profile', post.author)
-
-@login_required
 def post_create(request):
     """Return the post creation page."""
     form = PostForm(
@@ -109,6 +103,14 @@ def post_edit(request, post_id):
 
 
 @login_required
+def post_delete(request, post_id):
+    """Post author deletes his post."""
+    post = get_object_or_404(Post, pk=post_id)
+    post.delete()
+    return redirect('posts:profile', post.author)
+
+
+@login_required
 def add_comment(request, post_id):
     """The ability to add a comment."""
     post = get_object_or_404(Post, pk=post_id)
@@ -119,6 +121,14 @@ def add_comment(request, post_id):
         comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
+
+
+@login_required
+def comment_delete(request, post_id, comment_id):
+    """Comment author deletes his comment."""
+    comment = get_object_or_404(Comment, id=comment_id)
+    comment.delete()
+    return redirect('posts:post_detail', comment.post.pk)
 
 
 @login_required

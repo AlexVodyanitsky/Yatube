@@ -12,8 +12,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '[::1]',
     'testserver',
-    'www.vodyanixx.pythonanywhere.com',
-    'vodyanixx.pythonanywhere.com'
+    'www.vodyanixxx.pythonwhwerer.com',
+    'vodyanixxx.pythonanywhere.com'
 ]
 
 INTERNAL_IPS = [

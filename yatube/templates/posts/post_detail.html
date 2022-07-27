@@ -40,19 +40,32 @@
       <p>
         {{ post.text|linebreaks }}
       </p>
+
+      {% if user == author %}
+        <a class="btn btn-default" href="{% url 'posts:edit' post.pk %}">
+          <span class="glyphicon glyphicon-pencil"></span>
+          Редактировать пост
+        </a>
+        <a class="btn btn-default" href="{% url 'posts:post_delete' post.pk %}"
+           type="submit" onclick="return confirm('Вы уверены?')">
+          <span class="glyphicon glyphicon-pencil"></span>
+          Удалить пост
+        </a>
+      {% endif %}
+
         {% if user.is_authenticated %}
             <div class="card my-4">
-                <h5 class="card-header">Добавить комментарий:</h5>
-                <div class="card-body">
-                    <form method="post" action="{% url 'posts:add_comment' post.id %}">
-                        {% csrf_token %}
-                        <div class="form-group mb-2">
-                            {{ form.text|addclass:"form-control" }}
-                        </div>
-                        <button type="submit" class="btn btn-primary">Отправить</button>
-                    </form>
-                </div>
+            <h5 class="card-header">Добавить комментарий:</h5>
+            <div class="card-body">
+                <form method="post" action="{% url 'posts:add_comment' post.id %}">
+                    {% csrf_token %}
+                    <div class="form-group mb-2">
+                        {{ form.text|addclass:"form-control" }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
             </div>
+        </div>
         {% endif %}
 
         {% for comment in comments %}
@@ -68,17 +81,16 @@
                     </p>
                 </div>
             </div>
+
+            {% if user == comment.author %}
+              <a class="btn btn-default" href="{% url 'posts:comment_delete' post.pk comment.id %}"
+                  type="submit" onclick="return confirm('Вы уверены?')">
+                <span class="glyphicon glyphicon-pencil"></span>
+                Удалить комментарий
+              </a>
+            {% endif %}
         {% endfor %}
-      {% if user == author %}
-        <a class="btn btn-default" href="{% url 'posts:edit' post.pk %}">
-          <span class="glyphicon glyphicon-pencil"></span>
-          Редактировать пост
-        </a>
-        <a class="btn btn-default" href="{% url 'posts:post_delete' post.pk %}">
-          <span class="glyphicon glyphicon-pencil"></span>
-          Удалить пост
-        </a>
-      {% endif %}
+
     </article>
   </div>
 {% endblock %}
