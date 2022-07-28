@@ -71,6 +71,12 @@
         {% endwith %}
         </ul>
       </div>
+
+    <div class="ml-auto mb-2">
+        <form action="{% url "posts:search_results" %}" method="get">
+            <input name="q" type="text" placeholder="Поиск...">
+        </form>
+    </div>
     </div>
   </nav>
 </header>

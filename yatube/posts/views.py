@@ -1,9 +1,27 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Post, User
 from .utils import paginator
+
+
+def search(request):
+    """Search by text and author."""
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        post_list = Post.objects.filter(
+            Q(text__icontains=query) | Q(author__username__icontains=query)
+        )
+        results = all((query, len(post_list) > 0))
+        page_obj = paginator(request, post_list)
+        context = {
+            'query': query,
+            'results': results,
+            'page_obj': page_obj
+        }
+        return render(request, 'posts/search_results.html', context)
 
 
 def index(request):

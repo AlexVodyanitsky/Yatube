@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Результаты поиска{% endblock %}
+{% block content %}
+    <h1>{{ query }}: Результаты поиска</h1>
+    {% if results %}
+        {% for post in page_obj %}
+            {% include 'posts/includes/article.html' %}
+            {% if not forloop.last %}<hr>{% endif %}
+        {% endfor %}
+        {% include 'posts/includes/paginator.html' %}
+    {% else %}
+        <p>Ничего не найдено:(</p>
+    {% endif %}
+{% endblock %}
