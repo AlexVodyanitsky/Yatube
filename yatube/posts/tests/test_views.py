@@ -217,6 +217,7 @@ class PostViewsTests(TestCase):
             'posts:post_delete', kwargs={'post_id': f'{self.post.id}'}))
         self.assertFalse(Post.objects.filter(pk=self.post.pk).exists())
 
+
 class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
