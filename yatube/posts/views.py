@@ -130,7 +130,7 @@ def post_delete(request, post_id):
 
 @login_required
 def add_comment(request, post_id):
-    """The ability to add a comment."""
+    """Adding a comment."""
     post = get_object_or_404(Post, pk=post_id)
     form = CommentForm(request.POST or None)
     if form.is_valid():
